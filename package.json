@@ -6,8 +6,9 @@
     "build": "pnpm --filter platform build",
     "lint": "pnpm --filter platform lint"
   },
+  "packageManager": "pnpm@11.8.0",
   "engines": {
     "node": ">=20.0.0",
-    "pnpm": ">=9.0.0"
+    "pnpm": ">=11.0.0"
   }
 }
