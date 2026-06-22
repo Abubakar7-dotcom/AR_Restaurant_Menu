@@ -17,11 +17,14 @@ export interface Dish {
   sort_order: number
   status: DishStatus
   glb_url: string | null
+  video_url: string | null
+  rejection_note: string | null
   created_at: string
 }
 
 export interface Restaurant {
   id: string
+  owner_user_id: string | null
   slug: string
   name: string
   subscription_status: 'inactive' | 'active' | 'lapsed'
