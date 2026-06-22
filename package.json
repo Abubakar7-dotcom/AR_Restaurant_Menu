@@ -1,0 +1,13 @@
+{
+  "name": "ar-restaurant-menu",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm --filter platform dev",
+    "build": "pnpm --filter platform build",
+    "lint": "pnpm --filter platform lint"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  }
+}
