@@ -64,8 +64,8 @@ export default function SignupPage() {
       }
     }
 
-    setDone(true)
-    setLoading(false)
+    // Skip confirmation screen — go straight to dashboard (email confirm is off)
+    window.location.href = '/dashboard'
   }
 
   if (done) {
