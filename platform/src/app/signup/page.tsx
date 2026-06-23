@@ -9,15 +9,6 @@ export default function SignupPage() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const [done, setDone] = useState(false)
-
-  function slugify(name: string) {
-    return name
-      .toLowerCase()
-      .trim()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-|-$/g, '')
-  }
 
   async function handleSignup(e: React.FormEvent) {
     e.preventDefault()
@@ -25,13 +16,14 @@ export default function SignupPage() {
     setError('')
 
     const supabase = createClient()
-    const slug = slugify(restaurantName)
 
-    const { data, error: signUpError } = await supabase.auth.signUp({
+    // The restaurant row is created automatically by a DB trigger
+    // (handle_new_user) that reads restaurant_name from this metadata.
+    const { error: signUpError } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        emailRedirectTo: `${location.origin}/auth/callback`,
+        data: { restaurant_name: restaurantName },
       },
     })
 
@@ -41,46 +33,8 @@ export default function SignupPage() {
       return
     }
 
-    // Create restaurant row linked to the new user
-    if (data.user) {
-      const { error: dbError } = await supabase.from('restaurants').insert({
-        owner_user_id: data.user.id,
-        name: restaurantName,
-        slug,
-        subscription_status: 'inactive',
-      })
-
-      if (dbError) {
-        // Slug collision → append random suffix
-        if (dbError.code === '23505') {
-          const fallbackSlug = `${slug}-${Math.random().toString(36).slice(2, 6)}`
-          await supabase.from('restaurants').insert({
-            owner_user_id: data.user.id,
-            name: restaurantName,
-            slug: fallbackSlug,
-            subscription_status: 'inactive',
-          })
-        }
-      }
-    }
-
-    // Skip confirmation screen — go straight to dashboard (email confirm is off)
+    // Hard navigation so the new session cookie is sent to the server
     window.location.href = '/dashboard'
-  }
-
-  if (done) {
-    return (
-      <main className="min-h-screen bg-gray-950 flex items-center justify-center px-4">
-        <div className="text-center">
-          <div className="text-5xl mb-4">📧</div>
-          <h1 className="text-white text-xl font-bold mb-2">Check your email</h1>
-          <p className="text-gray-400 text-sm max-w-xs">
-            We sent a confirmation link to <span className="text-orange-400">{email}</span>.
-            Click it to activate your account.
-          </p>
-        </div>
-      </main>
-    )
   }
 
   return (
